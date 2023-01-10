@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { Stack } from '@mui/material'
 import { styled } from '@mui/material/styles'
 import { themeOptions } from '../theme/theme'
-import Question from '../components/Question'
 import axios from 'axios'
+import CategoryColumn from '../components/CategoryColumn'
 
 const BoardWrapper = styled(Stack)(() => ({
   backgroundColor: themeOptions.palette.background.default,
@@ -11,22 +11,15 @@ const BoardWrapper = styled(Stack)(() => ({
   color: themeOptions.palette.secondary.main,
   display: 'flex',
   justifyContent: 'center',
+  padding: "2vw",
 }))
-
-const CategoryColumn = styled(Stack)(() => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  fontSize: '4.8vw',
-  padding: '1vw',
-}))
-
-const NUM_OF_CATEGORIES = 5
-const NUM_OF_QUESTIONS = 5
 
 const baseUrl = 'https://jservice.io/api/'
+const service = 'categories'
 const categoryCount = 5
 const offset = Math.floor(Math.random() * 1000)
+
+const NUM_OF_QUESTIONS = 5
 
 interface CategoryType {
   id: number
@@ -37,10 +30,10 @@ interface CategoryType {
 const BoardView: React.FC = () => {
   const [categories, setCategories] = useState<CategoryType[]>([])
 
-  async function getCategories() {
-    const res = await axios.get(`${baseUrl}/categories/?count=${categoryCount}&offset=${offset}`)
+  const getCategories = async () => {
+    const res = await axios.get(`${baseUrl}${service}?count=${categoryCount}&offset=${offset}`)
     setCategories(res.data)
-    console.log(res.data)
+    // console.log(res.data)
   }
 
   useEffect(() => {
@@ -55,22 +48,7 @@ const BoardView: React.FC = () => {
   return (
     <BoardWrapper direction="row">
       {
-        categories.map((category, i) => {
-          return (
-            <CategoryColumn key={i}>
-              {
-                categories && category.title
-              }
-              {
-                [...Array(NUM_OF_QUESTIONS)].map((_, i) => {
-                  return (
-                    <Question data={i} key={i} />
-                  )
-                })
-              }
-            </CategoryColumn>
-          )
-        })
+        categories.map((category, i) => <CategoryColumn categoryID={category.id} key={i}/>)
       }
     </BoardWrapper>
   )
